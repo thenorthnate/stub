@@ -11,10 +11,11 @@ type Expectation struct {
 	callCount     int
 }
 
-func newExpectation(tb testing.TB, m *Method) *Expectation {
+func newExpectation(tb testing.TB, m *Method, inputs []any) *Expectation {
 	return &Expectation{
 		tb:            tb,
 		m:             m,
+		inputVals:     inputs,
 		expectedCount: 1,
 	}
 }
@@ -38,7 +39,7 @@ func (e *Expectation) matches(m *Method) bool {
 	return m == e.m
 }
 
-func (e *Expectation) call(m *Method, args ...any) (*Call, bool) {
+func (e *Expectation) call(m *Method, args []any) (*Call, bool) {
 	e.callCount++
 	if e.callCount > e.expectedCount && e.expectedCount >= 0 {
 		e.tb.Fatal("called too many times")

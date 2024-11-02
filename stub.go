@@ -39,12 +39,12 @@ func (s *Stub) OrderMatters(ok bool) {
 }
 
 func (s *Stub) Expect(m *Method, args ...any) *Expectation {
-	e := newExpectation(s.tb, m)
+	e := newExpectation(s.tb, m, args)
 	s.expect = append(s.expect, e)
 	return e
 }
 
-func (s *Stub) call(m *Method, args ...any) *Call {
+func (s *Stub) call(m *Method, args []any) *Call {
 	if s.orderMatters {
 		e := s.expect[s.currentExpIdx]
 		call, moveOn := e.call(m, args) // may fail the test

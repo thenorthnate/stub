@@ -22,7 +22,9 @@ func GetReturn[T any](c *Call) T {
 	vany := c.retVals[c.returnsIDX]
 	v, ok := vany.(T)
 	if !ok {
-		c.tb.Fatalf("expected type %T type but got %T", v, vany)
+		if vany != nil {
+			c.tb.Fatalf("expected type %T type but got %T", v, vany)
+		}
 	}
 	c.returnsIDX++
 	return v
