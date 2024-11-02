@@ -3,20 +3,27 @@ package stub
 import "testing"
 
 type Call struct {
-	tb        testing.TB
-	returns   []any
-	inquiries int
+	tb         testing.TB
+	retVals    []any
+	returnsIDX int
 }
 
-func (c *Call) Error() error {
-	c.tb.Cleanup(func() {
-		if c.inquiries != len(c.returns) {
-			c.tb.Fatal("expected to have %v inquiries but only got %v", len(c.returns), c.inquiries)
-		}
-	})
-	return nil
+func newCall(tb testing.TB, retVals []any) *Call {
+	return &Call{
+		tb:      tb,
+		retVals: retVals,
+	}
 }
 
-func (c *Call) Float64() float64 {
-	return 0
+func GetReturn[T any](c *Call) T {
+	if len(c.retVals) <= c.returnsIDX {
+		c.tb.Fatal("asking for an unexpected number of return values")
+	}
+	vany := c.retVals[c.returnsIDX]
+	v, ok := vany.(T)
+	if !ok {
+		c.tb.Fatalf("expected type %T type but got %T", v, vany)
+	}
+	c.returnsIDX++
+	return v
 }
